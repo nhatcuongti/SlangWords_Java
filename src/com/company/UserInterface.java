@@ -1,11 +1,21 @@
 package com.company;
 
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.HashMap;
+import java.util.Set;
+
 public class UserInterface extends javax.swing.JFrame {
 
     /**
      * Creates new form NewJFrame
      */
     public UserInterface() {
+        directionary = new Directionary();
         initComponents();
     }
 
@@ -18,6 +28,7 @@ public class UserInterface extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">
     private void initComponents() {
 
+        //Initialize
         topPanel = new javax.swing.JPanel();
         resetListBtn = new javax.swing.JButton();
         historyBtn = new javax.swing.JButton();
@@ -40,9 +51,10 @@ public class UserInterface extends javax.swing.JFrame {
         comboBox = new javax.swing.JComboBox<>();
         searchBtn = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
-        tableSlang = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        //Top Panel
 
         topPanel.setBorder(javax.swing.BorderFactory.createLineBorder(null));
 
@@ -51,6 +63,7 @@ public class UserInterface extends javax.swing.JFrame {
         historyBtn.setText("History");
 
         jLabel4.setText("Hint every day");
+
 
         javax.swing.GroupLayout topPanelLayout = new javax.swing.GroupLayout(topPanel);
         topPanel.setLayout(topPanelLayout);
@@ -77,12 +90,14 @@ public class UserInterface extends javax.swing.JFrame {
         );
 
         getContentPane().add(topPanel, java.awt.BorderLayout.PAGE_START);
+        //End Panel
 
         endPanel.setBorder(javax.swing.BorderFactory.createLineBorder(null));
 
         guessDefinitionBtn.setText("Guess Definition");
 
         guessWordBtn.setText("Guess Slang Words");
+
 
         javax.swing.GroupLayout endPanelLayout = new javax.swing.GroupLayout(endPanel);
         endPanel.setLayout(endPanelLayout);
@@ -106,6 +121,7 @@ public class UserInterface extends javax.swing.JFrame {
         );
 
         getContentPane().add(endPanel, java.awt.BorderLayout.PAGE_END);
+        //West Panel
 
         westPanel.setBorder(javax.swing.BorderFactory.createLineBorder(null));
 
@@ -115,9 +131,14 @@ public class UserInterface extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel2.setText("Definition");
 
-        definitionInput.setColumns(20);
+        definitionInput.setColumns(5);
         definitionInput.setRows(5);
+        definitionInput.setLineWrap(true);
+        definitionInput.setWrapStyleWord(true);
+
         jScrollPane1.setViewportView(definitionInput);
+        jScrollPane1.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        jScrollPane1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         addBtn.setText("Add");
 
@@ -187,31 +208,30 @@ public class UserInterface extends javax.swing.JFrame {
         );
 
         getContentPane().add(westPanel, java.awt.BorderLayout.LINE_START);
+        //Center Panel
 
-        searchInput.setText("Search ....");
+        searchBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                searchBtnActionPerformed(e);
+            }
+        });
 
         comboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Slang Words", "Definition" }));
 
         searchBtn.setText("Search");
 
-        tableSlang.setModel(new javax.swing.table.DefaultTableModel(
-                new Object [][] {
-                        {null, null},
-                        {null, null},
-                        {null, null}
-                },
-                new String [] {
-                        "Slang words", "Definition"
-                }
-        ) {
-            Class[] types = new Class [] {
-                    java.lang.String.class, java.lang.String.class
-            };
+        String[] columnNames = {"Slang Word", "Definition"};
+        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
 
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
+        tableSlang = new MySlangTable(tableModel);
+        tableSlang.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                selectItemTableSlandEvent(e);
             }
         });
+
         tableSlang.setColumnSelectionAllowed(true);
         jScrollPane2.setViewportView(tableSlang);
         tableSlang.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -252,6 +272,50 @@ public class UserInterface extends javax.swing.JFrame {
 
     private void wordInputActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
+    }
+
+    private void selectItemTableSlandEvent(MouseEvent evt){
+        String[] data = tableSlang.getSelectedData();
+        String slangWord =data[0];
+        String definition = data[1];
+
+        wordInput.setText(slangWord);
+        definitionInput.setText(definition);
+    }
+
+    private void searchBtnActionPerformed(ActionEvent evt){
+        //Check search box is empty or not
+        String keyWord= searchInput.getText();
+        if (keyWord.equals("")) {
+            JOptionPane.showMessageDialog(null, "Search box is empty", "Search error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+
+        //get ArrayList data
+        String choice = (String) comboBox.getSelectedItem();
+        HashMap<String, String> result = null;
+
+        if (choice.equals("Definition"))
+            result = directionary.findByDefinition(keyWord);
+        else
+            result = directionary.findByWords(keyWord);
+
+        if (result == null) {
+            JOptionPane.showMessageDialog(null, "Don't find any result ", "Search", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        System.out.println("Choice : " + choice);
+
+        //Add data
+        tableSlang.clearData();
+        Set<String> keySet = result.keySet();
+        for (String key : keySet){
+            String[] rowData = {key, result.get(key)};
+            tableSlang.addData(rowData);
+        }
+
     }
 
     /**
@@ -309,10 +373,12 @@ public class UserInterface extends javax.swing.JFrame {
     private javax.swing.JButton resetListBtn;
     private javax.swing.JButton searchBtn;
     private javax.swing.JTextField searchInput;
-    private javax.swing.JTable tableSlang;
+    private MySlangTable tableSlang;
     private javax.swing.JPanel topPanel;
     private javax.swing.JButton updateBtn;
     private javax.swing.JPanel westPanel;
     private javax.swing.JTextField wordInput;
+
+    Directionary directionary;
     // End of variables declaration
 }

@@ -25,4 +25,8 @@ public class MySlangTable extends JTable {
         return data;
     }
 
+    public void deleteSelectedRow() {
+        int row = getSelectedRow();
+        model.removeRow(row);
+    }
 }

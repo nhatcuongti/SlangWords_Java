@@ -1,15 +1,13 @@
 package com.company;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.Buffer;
 import java.util.*;
 
 public class Directionary {
     String fileName = "slang.txt";
     ArrayList<String> rawData = new ArrayList<>();
-    HashMap<String, String> directionary = new HashMap<String, String>();
+    HashMap<String, ArrayList<String>> directionaryTmp = new HashMap<>();
 
     public Directionary(){
         int maxLength = 0;
@@ -24,8 +22,17 @@ public class Directionary {
                 String[] slangAndDefi = data.split("`");
                 if (slangAndDefi.length < 2)
                     continue;
-                else
-                    directionary.put(slangAndDefi[0], slangAndDefi[1]);
+                else {
+
+                    String slangWord = slangAndDefi[0];
+                    String[] list = slangAndDefi[1].split("\\| ");
+
+                    ArrayList<String> listDefi = new ArrayList<>();
+                    for (String element : list)
+                        listDefi.add(element);
+
+                    directionaryTmp.put(slangWord, listDefi);
+                }
 
             }
             br.close();
@@ -39,17 +46,25 @@ public class Directionary {
 
     }
 
-    HashMap<String, String> findByDefinition(String keyWords){
-        HashMap<String, String> subDirectionary = new HashMap<>();
-        Set<String > keySet = directionary.keySet();
+    public boolean checkWordExists(String keyCheck) {
+        ArrayList<String> definition = directionaryTmp.get(keyCheck);
+        if (definition == null)
+            return false;
+
+        return true;
+    }
+
+    HashMap<String, ArrayList<String>> findByDefinition(String keyWords){
+        HashMap<String, ArrayList<String>> subDirectionary = new HashMap<>();
+        Set<String > keySet = directionaryTmp.keySet();
 
         for (String key : keySet) {
-            String definition = directionary.get(key);
+            String definition = String.valueOf(directionaryTmp.get(key));
             definition = definition.toUpperCase();
             keyWords = keyWords.toUpperCase();
 
             if (definition.contains(keyWords))
-                subDirectionary.put(key, directionary.get(key));
+                subDirectionary.put(key, directionaryTmp.get(key));
         }
 
         if (subDirectionary.size() == 0)
@@ -57,31 +72,86 @@ public class Directionary {
         return subDirectionary;
     }
 
-    HashMap<String, String> findByWords(String keyWords){
-        HashMap<String, String> subDirectionary = new HashMap<>();
-        if (directionary.get(keyWords) == null)
+    HashMap<String, ArrayList<String>> findByWords(String keyWords){
+        HashMap<String, ArrayList<String>> subDirectionary = new HashMap<>();
+        if (directionaryTmp.get(keyWords) == null)
             return null;
 
-        subDirectionary.put(keyWords, directionary.get(keyWords));
+        subDirectionary.put(keyWords, directionaryTmp.get(keyWords));
         return subDirectionary;
     }
 
     void get4RandomWords(){
-        String[] slangWords = directionary.keySet().toArray(new String[0]);
-        Random random = new Random();
-        int index = random.nextInt(3, slangWords.length - 1);
-        int index1 = index - 1;
-        int index2 = index - 2;
-        int index3 = index + 1;
-        System.out.println(slangWords[index]);
-        System.out.println(slangWords[index1]);
-        System.out.println(slangWords[index2]);
-        System.out.println(slangWords[index3]);
+
+    }
+
+    public boolean checkDefiExists(String word, String definition) {
+        ArrayList<String> defiList = directionaryTmp.get(word);
+
+        for(String defi : defiList)
+            if (defi.equals(definition))
+                return true;
+
+        return false;
+    }
+
+    public void deleteOneElement(String word, String definition) {
+        ArrayList<String> defiList = directionaryTmp.get(word);
+
+        defiList.remove(definition);
+        if (defiList.size() == 0)
+            directionaryTmp.remove(word);
+
+        writeToFile();
+    }
+
+    void writeToFile(){
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter("slang.txt"));
+            Set<String> keySet = directionaryTmp.keySet();
+            for (String key : keySet){
+                //Get String
+                ArrayList<String> defiList = directionaryTmp.get(key);
+                String defiListStr = String.join("| ", defiList);
+                String strToFile = key + "`" + defiListStr;
+
+                //Write to file
+                bw.write(strToFile);
+                bw.newLine();
+            }
+
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void insertNewElement(String word, String definition) {
+        ArrayList<String> listDefi = new ArrayList<>();
+        listDefi.add(definition);
+
+        directionaryTmp.put(word, listDefi);
+        writeToFile();
+    }
+
+    public void insertToExistsElement(String word, String definition) {
+        Set<String> keySet = directionaryTmp.keySet();
+        ArrayList<String> listDefi = directionaryTmp.get(word);
+        listDefi.add(definition);
+
+        writeToFile();
     }
 
     public static void main(String[] args){
         Directionary directionary = new Directionary();
-        directionary.findByDefinition("B");
+        ArrayList<String> str = new ArrayList<>();
+        str.add("Hello");
+        str.add("Hi");
+        str.add("Hi");
 
+        str.remove("Hi");
+        System.out.println(str);
     }
+
 }

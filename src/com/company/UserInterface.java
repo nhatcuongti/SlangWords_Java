@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -141,12 +142,30 @@ public class UserInterface extends javax.swing.JFrame {
         jScrollPane1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         addBtn.setText("Add");
+        addBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                addActionPerformed();
+            }
+        });
 
         deleteBtn.setText("Delete");
+        deleteBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deleteActionPerformed();
+            }
+        });
 
         updateBtn.setText("Update");
 
         clearBtn.setText("Clear");
+        clearBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                clearActionPerformed();
+            }
+        });
 
         wordInput.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -294,7 +313,7 @@ public class UserInterface extends javax.swing.JFrame {
 
         //get ArrayList data
         String choice = (String) comboBox.getSelectedItem();
-        HashMap<String, String> result = null;
+        HashMap<String, ArrayList<String >> result = null;
 
         if (choice.equals("Definition"))
             result = directionary.findByDefinition(keyWord);
@@ -312,10 +331,110 @@ public class UserInterface extends javax.swing.JFrame {
         tableSlang.clearData();
         Set<String> keySet = result.keySet();
         for (String key : keySet){
-            String[] rowData = {key, result.get(key)};
-            tableSlang.addData(rowData);
+            ArrayList<String> listDefi = result.get(key);
+            for (String defi : listDefi){
+                String[] rowData = {key, defi};
+                tableSlang.addData(rowData);
+            }
+
         }
 
+    }
+
+    void clearActionPerformed(){
+        wordInput.setText("");
+        definitionInput.setText("");
+        tableSlang.clearData();
+    }
+
+    private void deleteActionPerformed(){
+        String word = wordInput.getText();
+        String definition = definitionInput.getText();
+        if (word.equals("")) {
+            JOptionPane.showMessageDialog(null, "You don't fill word input", "Delete", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        else if(definition.equals("")){
+            JOptionPane.showMessageDialog(null, "You don't fill definition input", "Delete", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        else if (!directionary.checkWordExists(word)){
+            JOptionPane.showMessageDialog(null, "Your Word is not valid", "Delete", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        else if (!directionary.checkDefiExists(word, definition)){
+            JOptionPane.showMessageDialog(null, "Your Definition is not valid", "Delete", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+
+        //delete on GUI
+        tableSlang.deleteSelectedRow();
+
+        //Delete on Directionary
+        directionary.deleteOneElement(word, definition);
+
+        wordInput.setText("");
+        definitionInput.setText("");
+    }
+
+    private void addActionPerformed(){
+        String word = wordInput.getText();
+        String definition = definitionInput.getText();
+
+        if (word.equals("")) {
+            JOptionPane.showMessageDialog(null, "You don't fill word input", "Delete", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        else if(definition.equals("")){
+            JOptionPane.showMessageDialog(null, "You don't fill definition input", "Delete", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        else{
+            if (!directionary.checkWordExists(word)){
+               //Slang Word Chưa tồn tại
+
+                //Add tren directionary
+                directionary.insertNewElement(word, definition);
+
+                //Add tren giao JTable
+                String[] row = {word, definition};
+                tableSlang.addData(row);
+
+            }
+            else {
+                if (directionary.checkDefiExists(word, definition)){
+                    Object[] options = {"Overwrite", "Duplicate"};
+                    int result = JOptionPane.showOptionDialog(null,
+                            "Do you want to overwrite or duplicate this ?",
+                            "Add",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE,
+                            null,
+                            options,
+                            null);
+
+
+                    if (result == 1){ //duplicate
+                        String[] row = {word, definition};
+                        tableSlang.addData(row);
+                        directionary.insertToExistsElement(word, definition);
+                    }
+
+                }
+                else {
+                    directionary.insertToExistsElement(word, definition);
+
+                    String[] row = {word, definition};
+                    tableSlang.addData(row);
+
+                }
+
+            }
+
+            JOptionPane.showMessageDialog(null, "Add new word successfully !!", "Add", JOptionPane.INFORMATION_MESSAGE);
+
+        }
     }
 
     /**

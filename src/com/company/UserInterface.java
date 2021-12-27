@@ -6,6 +6,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
@@ -60,8 +64,20 @@ public class UserInterface extends javax.swing.JFrame {
         topPanel.setBorder(javax.swing.BorderFactory.createLineBorder(null));
 
         resetListBtn.setText("Reset List");
+        resetListBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                resetActionPerformed();
+            }
+        });
 
         historyBtn.setText("History");
+        historyBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                historyActionPerformed();
+            }
+        });
 
         jLabel4.setText("Hint every day");
 
@@ -299,55 +315,9 @@ public class UserInterface extends javax.swing.JFrame {
         // TODO add your handling code here:
     }
 
-    private void selectItemTableSlandEvent(MouseEvent evt){
-        String[] data = tableSlang.getSelectedData();
-        String slangWord =data[0];
-        String definition = data[1];
 
-        wordInput.setText(slangWord);
-        definitionInput.setText(definition);
-    }
-
-    private void searchBtnActionPerformed(ActionEvent evt){
-        //Check search box is empty or not
-        String keyWord= searchInput.getText();
-        if (keyWord.equals("")) {
-            JOptionPane.showMessageDialog(null, "Search box is empty", "Search error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-
-        //get ArrayList data
-        String choice = (String) comboBox.getSelectedItem();
-        HashMap<String, ArrayList<String >> result = null;
-
-        if (choice.equals("Definition"))
-            result = directionary.findByDefinition(keyWord);
-        else
-            result = directionary.findByWords(keyWord);
-
-        if (result == null) {
-            JOptionPane.showMessageDialog(null, "Don't find any result ", "Search", JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
-
-        System.out.println("Choice : " + choice);
-
-        //Add data
-        tableSlang.clearData();
-        Set<String> keySet = result.keySet();
-        for (String key : keySet){
-            ArrayList<String> listDefi = result.get(key);
-            for (String defi : listDefi){
-                String[] rowData = {key, defi};
-                tableSlang.addData(rowData);
-            }
-
-        }
-
-    }
-
-    void clearActionPerformed(){
+    //WEST PANEL action listener
+    private void clearActionPerformed(){
         wordInput.setText("");
         definitionInput.setText("");
         tableSlang.clearData();
@@ -464,6 +434,76 @@ public class UserInterface extends javax.swing.JFrame {
             directionary.updateData(oldWord, oldDefi, newWord, newDefinition);
 
             JOptionPane.showMessageDialog(null, "Update Successfully !!", "Update", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+    }
+
+    //TOP PANEL action listener
+    private void resetActionPerformed(){
+        //Reset on Data
+        directionary.resetData();
+        //Reset on GUI
+        tableSlang.clearData();
+        wordInput.setText("");
+        definitionInput.setText("");
+
+        //Annouce message
+        JOptionPane.showMessageDialog(null, "Reset data successfully !!", "Reset", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+
+
+    private void historyActionPerformed(){
+        ArrayList<String[]> historyData = directionary.getHistory();
+    }
+
+    //CENTER PANEL action listener
+    private void selectItemTableSlandEvent(MouseEvent evt){
+        String[] data = tableSlang.getSelectedData();
+        String slangWord =data[0];
+        String definition = data[1];
+
+        wordInput.setText(slangWord);
+        definitionInput.setText(definition);
+    }
+
+    private void searchBtnActionPerformed(ActionEvent evt){
+        //Check search box is empty or not
+        String keyWord= searchInput.getText();
+        if (keyWord.equals("")) {
+            JOptionPane.showMessageDialog(null, "Search box is empty", "Search error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+
+        //get ArrayList data
+        String choice = (String) comboBox.getSelectedItem();
+        HashMap<String, ArrayList<String >> result = null;
+
+        if (choice.equals("Definition"))
+            result = directionary.findByDefinition(keyWord);
+        else{
+            directionary.saveSlangWord(keyWord);
+            result = directionary.findByWords(keyWord);
+        }
+
+        if (result == null) {
+            JOptionPane.showMessageDialog(null, "Don't find any result ", "Search", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        System.out.println("Choice : " + choice);
+
+        //Add data
+        tableSlang.clearData();
+        Set<String> keySet = result.keySet();
+        for (String key : keySet){
+            ArrayList<String> listDefi = result.get(key);
+            for (String defi : listDefi){
+                String[] rowData = {key, defi};
+                tableSlang.addData(rowData);
+            }
+
         }
 
     }

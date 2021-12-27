@@ -6,11 +6,15 @@ import java.util.*;
 public class Directionary {
     String fileName = "slang.txt";
     ArrayList<String> rawData = new ArrayList<>();
+    HashMap<String, ArrayList<String>> directionary = new HashMap<>();
     HashMap<String, ArrayList<String>> directionaryTmp = new HashMap<>();
 
     public Directionary(){
-        int maxLength = 0;
-        long startTime = System.currentTimeMillis();
+        readDataFrom(directionaryTmp, "slang.txt");
+        readDataFrom(directionary, "slangOriginal.txt");
+    }
+
+    public void readDataFrom(HashMap<String, ArrayList<String>> directionaryData, String fileName){
         try {
             BufferedReader br = new BufferedReader(new FileReader(fileName));
             while(true){
@@ -30,7 +34,7 @@ public class Directionary {
                     for (String element : list)
                         listDefi.add(element);
 
-                    directionaryTmp.put(slangWord, listDefi);
+                    directionaryData.put(slangWord, listDefi);
                 }
 
             }
@@ -40,9 +44,6 @@ public class Directionary {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        long endTime = System.currentTimeMillis() - startTime;
-
-
     }
 
     public boolean checkWordExists(String keyCheck) {
@@ -142,12 +143,6 @@ public class Directionary {
         writeToFile();
     }
 
-    public static void main(String[] args){
-        Directionary directionary = new Directionary();
-        HashMap<String, String> test = new HashMap<>();
-        test.put("A", "Ahihi");
-        System.out.println(test.remove("A"));
-    }
 
     public void updateData(String word, String definition, String newWord, String newDefinition) {
         if (word.equals(newWord)){
@@ -180,5 +175,56 @@ public class Directionary {
 
             writeToFile();
         }
+    }
+
+    public void resetData() {
+        directionaryTmp = new HashMap<>(directionary);
+    }
+
+
+
+
+    public void saveSlangWord(String keyWord) {
+        try {
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("history.txt", true));
+            bufferedWriter.write(keyWord);
+            bufferedWriter.newLine();
+            bufferedWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public ArrayList<String[]> getHistory() {
+        ArrayList<String[]> data = new ArrayList<>();
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader("history.txt"));
+            while (true){
+                String str = br.readLine();
+                if (str == null)
+                    break;
+
+                // Continue on this
+            }
+
+            br.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static void main(String[] args){
+        Directionary directionary = new Directionary();
+        HashMap<String, String> test = new HashMap<>();
+        test.put("A", "Ahihi");
+        HashMap<String, String> testTmp = new HashMap<>(test);
+        testTmp.remove("A");
+
+        System.out.println(testTmp.get("A"));
     }
 }

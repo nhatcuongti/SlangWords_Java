@@ -1496,6 +1496,7 @@ UNK`Crackhead
 UNO`You know
 DMB`Dave Matthews Band
 V/R`Very Respectfully
+H!`Yahoo
 GA`Go Ahead
 PITME`Peace In the Middle East
 DMC`Deep Meaningful Conversation
@@ -1557,7 +1558,6 @@ HF`Have Fun
 HG`Holy Grail
 DNK`Do Not Know
 HH`Holding Hands
-HI`Hello
 DNM`Does Not Matter| Deep and Meaningful
 DNO`Don't Know
 HL`Half Life (game)
@@ -1705,7 +1705,6 @@ LK`LOLK
 DRO`HyDROponically grown marijuana
 LL`Laugh Loudly| LOL
 LM`Loud Mouth
-LO`Hello
 LP`Long Play
 UTD`Up To Date
 LQ`Liquor| Lover's Quarrel
@@ -3531,7 +3530,7 @@ HFY`Here For You| Happy for You
 YHL`You Have Lost
 YHM`You Have Mail
 ILUT`I Love You Too
-HGB`Hellogoodbye (band)
+HGB`Hellogoodbye (band)| HelL
 FORTE`Area of expertise| strength
 PANSY`Sissy| unmanly person
 YHU`You

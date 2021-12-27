@@ -158,6 +158,12 @@ public class UserInterface extends javax.swing.JFrame {
         });
 
         updateBtn.setText("Update");
+        updateBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateActionPerformed();
+            }
+        });
 
         clearBtn.setText("Clear");
         clearBtn.addActionListener(new ActionListener() {
@@ -435,6 +441,31 @@ public class UserInterface extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Add new word successfully !!", "Add", JOptionPane.INFORMATION_MESSAGE);
 
         }
+    }
+
+    private void updateActionPerformed(){
+        String newWord = wordInput.getText();
+        String newDefinition = definitionInput.getText();
+
+        //Kiểm tra xem đã chọn chưa
+        if (tableSlang.getSelectedRow() == -1){
+            JOptionPane.showMessageDialog(null, "You don't select any data on table !!", "Update", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        else {
+            int row = tableSlang.getSelectedRow();
+            String oldWord = (String) tableSlang.getValueAt(row, 0);
+            String oldDefi = (String) tableSlang.getValueAt(row, 1);
+
+            //Cap Nhat o GUI
+            tableSlang.updateSelectedRow(newWord, newDefinition);
+
+            //Cap Nhat o Diẻctionary
+            directionary.updateData(oldWord, oldDefi, newWord, newDefinition);
+
+            JOptionPane.showMessageDialog(null, "Update Successfully !!", "Update", JOptionPane.INFORMATION_MESSAGE);
+        }
+
     }
 
     /**

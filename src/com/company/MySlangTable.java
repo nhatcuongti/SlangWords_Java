@@ -29,4 +29,10 @@ public class MySlangTable extends JTable {
         int row = getSelectedRow();
         model.removeRow(row);
     }
+
+    public void updateSelectedRow(String newWord, String newDefinition) {
+        int row = getSelectedRow();
+        model.setValueAt(newWord, row, 0);
+        model.setValueAt(newDefinition, row, 1);
+    }
 }

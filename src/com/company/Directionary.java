@@ -1,7 +1,6 @@
 package com.company;
 
 import java.io.*;
-import java.nio.Buffer;
 import java.util.*;
 
 public class Directionary {
@@ -145,13 +144,41 @@ public class Directionary {
 
     public static void main(String[] args){
         Directionary directionary = new Directionary();
-        ArrayList<String> str = new ArrayList<>();
-        str.add("Hello");
-        str.add("Hi");
-        str.add("Hi");
-
-        str.remove("Hi");
-        System.out.println(str);
+        HashMap<String, String> test = new HashMap<>();
+        test.put("A", "Ahihi");
+        System.out.println(test.remove("A"));
     }
 
+    public void updateData(String word, String definition, String newWord, String newDefinition) {
+        if (word.equals(newWord)){
+            // Change on definition
+            if (definition.equals(newDefinition))
+                return;
+
+            ArrayList<String> listDefi = directionaryTmp.get(word);
+            int index = 0;
+            int count = 0;
+            for (String defi : listDefi) {
+                if (defi.equals(definition)) {
+                    index = count;
+                    break;
+                } else
+                    count++;
+            }
+
+            listDefi.set(index, newDefinition);
+            writeToFile();
+
+
+        }
+        else{
+            deleteOneElement(word, definition);
+            if (checkWordExists(newWord))
+                insertToExistsElement(newWord, newDefinition);
+            else
+                insertNewElement(newWord, newDefinition);
+
+            writeToFile();
+        }
+    }
 }

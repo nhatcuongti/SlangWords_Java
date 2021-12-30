@@ -38,7 +38,7 @@ public class UserInterface extends javax.swing.JFrame {
         topPanel = new javax.swing.JPanel();
         resetListBtn = new javax.swing.JButton();
         historyBtn = new javax.swing.JButton();
-        jLabel4 = new javax.swing.JLabel();
+//        jLabel4 = new javax.swing.JLabel();
         endPanel = new javax.swing.JPanel();
         guessDefinitionBtn = new javax.swing.JButton();
         guessWordBtn = new javax.swing.JButton();
@@ -57,6 +57,7 @@ public class UserInterface extends javax.swing.JFrame {
         comboBox = new javax.swing.JComboBox<>();
         searchBtn = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
+        hintBtn = new JButton("Hint Everyday");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -80,7 +81,13 @@ public class UserInterface extends javax.swing.JFrame {
             }
         });
 
-        jLabel4.setText("Hint every day");
+//        jLabel4.setText("Hint every day");
+        hintBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                hintActionPerformed();
+            }
+        });
 
 
         javax.swing.GroupLayout topPanelLayout = new javax.swing.GroupLayout(topPanel);
@@ -89,7 +96,7 @@ public class UserInterface extends javax.swing.JFrame {
                 topPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, topPanelLayout.createSequentialGroup()
                                 .addGap(23, 23, 23)
-                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 539, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(hintBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 79, Short.MAX_VALUE)
                                 .addComponent(resetListBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(30, 30, 30)
@@ -103,7 +110,7 @@ public class UserInterface extends javax.swing.JFrame {
                                 .addGroup(topPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(resetListBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(historyBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(hintBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(27, 27, 27))
         );
 
@@ -325,6 +332,24 @@ public class UserInterface extends javax.swing.JFrame {
         pack();
     }// </editor-fold>
 
+    private void hintActionPerformed() {
+        HashMap<String, String> questionData = directionary.get4RandomWords();
+
+        Set<String> keySet = questionData.keySet();
+        String slangWord = null;
+        String definition = null;
+        for (String key : keySet){
+            slangWord = key;
+            definition = questionData.get(key);
+            break;
+        }
+
+        JOptionPane.showMessageDialog(null,
+                slangWord + " : " + definition,
+                "Hint today !!",
+                JOptionPane.PLAIN_MESSAGE);
+    }
+
     private void guessWordActionPerformed(){
         HashMap<String, String> questionData = directionary.get4RandomWords();
 
@@ -371,7 +396,45 @@ public class UserInterface extends javax.swing.JFrame {
     }
 
     private void guessDefiActionPerformed(){
+        HashMap<String, String> questionData = directionary.get4RandomWords();
 
+        String[] options = new String[4];
+        int index = 0;
+        Set<String> keySet = questionData.keySet();
+        ArrayList<String> keyList = new ArrayList<>(keySet);
+        for (String key : keySet)
+            options[index++] = questionData.get(key);
+
+        String questionSlangWord= null;
+        Random random = new Random();
+        int rightIndex = random.nextInt(0, 4);
+        questionSlangWord = keyList.get(rightIndex);
+
+        while (true){
+            int response = JOptionPane.showOptionDialog(null,
+                    "What is the definition of slang word '" + questionSlangWord + "' ?",
+                    "Title",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
+                    null, options, null);
+
+            if (response == rightIndex) {
+                JOptionPane.showMessageDialog(null,
+                        "Correct Answer !!",
+                        "Result",
+                        JOptionPane.PLAIN_MESSAGE);
+
+                break;
+            }
+            else{
+                int confirm = JOptionPane.showConfirmDialog(null,
+                        "Your answer is incorrect !! Do you want continue ?",
+                        "Result",
+                        JOptionPane.YES_NO_OPTION);
+
+                if (confirm != JOptionPane.YES_OPTION)
+                    break;
+            }
+        }
     }
 
     private void wordInputActionPerformed(java.awt.event.ActionEvent evt) {
@@ -635,6 +698,7 @@ public class UserInterface extends javax.swing.JFrame {
     private javax.swing.JButton updateBtn;
     private javax.swing.JPanel westPanel;
     private javax.swing.JTextField wordInput;
+    private javax.swing.JButton hintBtn;
 
     Directionary directionary;
     // End of variables declaration

@@ -12,6 +12,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.Set;
 
 public class UserInterface extends javax.swing.JFrame {
@@ -112,8 +113,21 @@ public class UserInterface extends javax.swing.JFrame {
         endPanel.setBorder(javax.swing.BorderFactory.createLineBorder(null));
 
         guessDefinitionBtn.setText("Guess Definition");
+        guessDefinitionBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                guessDefiActionPerformed();
+            }
+        });
 
         guessWordBtn.setText("Guess Slang Words");
+        guessWordBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                guessWordActionPerformed();
+            }
+        });
+
 
 
         javax.swing.GroupLayout endPanelLayout = new javax.swing.GroupLayout(endPanel);
@@ -311,6 +325,55 @@ public class UserInterface extends javax.swing.JFrame {
         pack();
     }// </editor-fold>
 
+    private void guessWordActionPerformed(){
+        HashMap<String, String> questionData = directionary.get4RandomWords();
+
+        String[] options = new String[4];
+        int index = 0;
+        Set<String> keySet = questionData.keySet();
+        for (String key : keySet)
+            options[index++] = key;
+
+        String questionDefi = null;
+        Random random = new Random();
+        String keyQuestion = options[random.nextInt(0, 4)];
+        questionDefi = questionData.get(keyQuestion);
+
+        while (true){
+            int response = JOptionPane.showOptionDialog(null,
+                    "What is the slang word of '" + questionDefi + "' ?",
+                    "Title",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
+                    null, options, null);
+
+            String myAnswer = options[response];
+            if (questionData.get(myAnswer).equals(questionDefi)) {
+                JOptionPane.showMessageDialog(null,
+                        "Correct Answer !!",
+                        "Result",
+                        JOptionPane.PLAIN_MESSAGE);
+
+                break;
+            }
+            else{
+                int confirm = JOptionPane.showConfirmDialog(null,
+                                                "Your answer is incorrect !! Do you want continue ?",
+                                                "Result",
+                                                JOptionPane.YES_NO_OPTION);
+
+                if (confirm != JOptionPane.YES_OPTION)
+                    break;
+            }
+        }
+
+
+
+    }
+
+    private void guessDefiActionPerformed(){
+
+    }
+
     private void wordInputActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
     }
@@ -455,6 +518,10 @@ public class UserInterface extends javax.swing.JFrame {
 
     private void historyActionPerformed(){
         ArrayList<String[]> historyData = directionary.getHistory();
+
+        tableSlang.clearData();
+        for (String[] data : historyData)
+            tableSlang.addData(data);
     }
 
     //CENTER PANEL action listener

@@ -81,10 +81,6 @@ public class Directionary {
         return subDirectionary;
     }
 
-    void get4RandomWords(){
-
-    }
-
     public boolean checkDefiExists(String word, String definition) {
         ArrayList<String> defiList = directionaryTmp.get(word);
 
@@ -181,9 +177,6 @@ public class Directionary {
         directionaryTmp = new HashMap<>(directionary);
     }
 
-
-
-
     public void saveSlangWord(String keyWord) {
         try {
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("history.txt", true));
@@ -197,34 +190,72 @@ public class Directionary {
 
     public ArrayList<String[]> getHistory() {
         ArrayList<String[]> data = new ArrayList<>();
+        BufferedReader br = null;
 
         try {
-            BufferedReader br = new BufferedReader(new FileReader("history.txt"));
+            br = new BufferedReader(new FileReader("history.txt"));
             while (true){
                 String str = br.readLine();
                 if (str == null)
                     break;
 
                 // Continue on this
+                String statusData = (checkWordExists(str) ? "Found" : "Not Found");
+                String[] dataToTable = {str, statusData};
+                data.add(dataToTable);
             }
 
-            br.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
-        return null;
+        return data;
+    }
+
+    String getDefiRandom(String word){
+        ArrayList<String> defiList = directionaryTmp.get(word);
+        Random r = new Random();
+        String value = defiList.get(r.nextInt(0, defiList.size()));
+        System.out.println(value);
+        return value;
+    }
+
+    HashMap<String, String> get4RandomWords(){
+        HashMap<String, String> questionData = new HashMap<>();
+
+        ArrayList<String> keyAsArray = new ArrayList<>(directionaryTmp.keySet());
+        Random r = new Random();
+
+        int index = r.nextInt(2, keyAsArray.size() - 3);
+
+        String key = keyAsArray.get(index);
+        questionData.put(key, getDefiRandom(key));
+
+        key = keyAsArray.get(index - 1);
+        questionData.put(key, getDefiRandom(key));
+
+        key = keyAsArray.get(index - 2);
+        questionData.put(key, getDefiRandom(key));
+
+        key = keyAsArray.get(index + 1);
+        questionData.put(key, getDefiRandom(key));
+
+        return questionData;
     }
 
     public static void main(String[] args){
         Directionary directionary = new Directionary();
-        HashMap<String, String> test = new HashMap<>();
-        test.put("A", "Ahihi");
-        HashMap<String, String> testTmp = new HashMap<>(test);
-        testTmp.remove("A");
+        //directionary.get4RandomWords();
 
-        System.out.println(testTmp.get("A"));
     }
 }

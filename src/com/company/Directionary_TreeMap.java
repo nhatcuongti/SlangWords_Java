@@ -76,10 +76,10 @@ public class Directionary_TreeMap {
         System.out.println(slangWords[index3]);
     }
 
-    public static void main(String[] args){
-        Directionary_TreeMap directionaryTreeMap = new Directionary_TreeMap();
-         directionaryTreeMap.findByDefinition("C");
-
-
-    }
+//    public static void main(String[] args){
+//        Directionary_TreeMap directionaryTreeMap = new Directionary_TreeMap();
+//         directionaryTreeMap.findByDefinition("C");
+//
+//
+//    }
 }

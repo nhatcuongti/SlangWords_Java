@@ -9,14 +9,20 @@ public class Directionary {
     HashMap<String, ArrayList<String>> directionary = new HashMap<>();
     HashMap<String, ArrayList<String>> directionaryTmp = new HashMap<>();
 
+
     public Directionary(){
         readDataFrom(directionaryTmp, "slang.txt");
         readDataFrom(directionary, "slangOriginal.txt");
+
+
     }
 
     public void readDataFrom(HashMap<String, ArrayList<String>> directionaryData, String fileName){
+        BufferedReader br = null;
+
         try {
-            BufferedReader br = new BufferedReader(new FileReader(fileName));
+            br = new BufferedReader(new FileReader(fileName));
+
             while(true){
                 String data = br.readLine();
                 if (data == null)
@@ -38,11 +44,18 @@ public class Directionary {
                 }
 
             }
-            br.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -102,8 +115,10 @@ public class Directionary {
     }
 
     void writeToFile(){
+        BufferedWriter bw = null;
+
         try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter("slang.txt"));
+            bw = new BufferedWriter(new FileWriter("slang.txt"));
             Set<String> keySet = directionaryTmp.keySet();
             for (String key : keySet){
                 //Get String
@@ -119,6 +134,14 @@ public class Directionary {
             bw.close();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            if (bw != null) {
+                try {
+                    bw.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
     }
@@ -173,8 +196,69 @@ public class Directionary {
         }
     }
 
+    public void copyOrginalToTmp(){
+        //Copy value from Hashmap
+        directionaryTmp = new HashMap<>();
+        Set<String> keySet = directionary.keySet();
+        for (String key : keySet){
+            ArrayList<String> listTmp = new ArrayList<String>(directionary.get(key));
+            directionaryTmp.put(key, listTmp);
+        }
+
+        //Copy File
+        BufferedWriter bw = null;
+        BufferedReader br = null;
+
+        try {
+            bw = new BufferedWriter(new FileWriter("slang.txt"));
+            br = new BufferedReader(new FileReader("slangOriginal.txt"));
+
+            String line;
+            while ((line = br.readLine()) != null){
+                bw.write(line);
+                bw.newLine();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (bw != null) {
+                try {
+                    bw.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     public void resetData() {
-        directionaryTmp = new HashMap<>(directionary);
+        copyOrginalToTmp();
+
+        BufferedWriter bw = null;
+        try {
+            bw = new BufferedWriter(new FileWriter("history.txt"));
+            bw.write("");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (bw != null) {
+                try {
+                    bw.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     public void saveSlangWord(String keyWord) {
@@ -200,6 +284,8 @@ public class Directionary {
                     break;
 
                 // Continue on this
+
+
                 String statusData = (checkWordExists(str) ? "Found" : "Not Found");
                 String[] dataToTable = {str, statusData};
                 data.add(dataToTable);
@@ -254,8 +340,18 @@ public class Directionary {
     }
 
     public static void main(String[] args){
-        Directionary directionary = new Directionary();
-        //directionary.get4RandomWords();
+        HashMap<String, ArrayList<String>> directionary = new HashMap<>();
+        ArrayList<String> arrayList = new ArrayList<>();
+        arrayList.add("nb1");
+        arrayList.add("nb2");
+        directionary.put("1", arrayList);
+
+        HashMap<String, ArrayList<String>> directionaryTmp = new HashMap<>();
+        directionaryTmp.putAll(directionary);
+        ArrayList<String> list = directionaryTmp.get("1");
+        list.remove("nb1");
+        System.out.println(directionaryTmp);
+        System.out.println(directionary);
 
     }
 }

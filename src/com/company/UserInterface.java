@@ -472,6 +472,7 @@ public class UserInterface extends javax.swing.JFrame {
 
         //delete on GUI
         tableSlang.deleteSelectedRow();
+        JOptionPane.showMessageDialog(null, "Delete Successfully!!", "Delete", JOptionPane.PLAIN_MESSAGE);
 
         //Delete on Directionary
         directionary.deleteOneElement(word, definition);
@@ -602,6 +603,7 @@ public class UserInterface extends javax.swing.JFrame {
         String keyWord= searchInput.getText();
         if (keyWord.equals("")) {
             JOptionPane.showMessageDialog(null, "Search box is empty", "Search error", JOptionPane.ERROR_MESSAGE);
+            tableSlang.clearData();
             return;
         }
 
@@ -619,6 +621,7 @@ public class UserInterface extends javax.swing.JFrame {
 
         if (result == null) {
             JOptionPane.showMessageDialog(null, "Don't find any result ", "Search", JOptionPane.INFORMATION_MESSAGE);
+            tableSlang.clearData();
             return;
         }
 
@@ -633,9 +636,9 @@ public class UserInterface extends javax.swing.JFrame {
                 String[] rowData = {key, defi};
                 tableSlang.addData(rowData);
             }
-
         }
 
+        int a = 1;
     }
 
     /**

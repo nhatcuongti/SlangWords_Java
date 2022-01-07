@@ -14,6 +14,7 @@ public class Directionary {
         readDataFrom(directionaryTmp, "slang.txt");
         readDataFrom(directionary, "slangOriginal.txt");
 
+        System.out.println(checkWordExists("A"));
 
     }
 
@@ -87,10 +88,29 @@ public class Directionary {
 
     HashMap<String, ArrayList<String>> findByWords(String keyWords){
         HashMap<String, ArrayList<String>> subDirectionary = new HashMap<>();
-        if (directionaryTmp.get(keyWords) == null)
+
+        Set<String > keySet = directionaryTmp.keySet();
+
+        for (String key : keySet) {
+            String checkKey = key;
+            checkKey = checkKey.toUpperCase();
+            keyWords = keyWords.toUpperCase();
+
+
+            if (checkKey.startsWith(keyWords)) {
+                if (key == "A")
+                    System.out.println(key);
+                subDirectionary.put(key, directionaryTmp.get(key));
+            }
+        }
+
+        if (subDirectionary.size() == 0)
             return null;
 
-        subDirectionary.put(keyWords, directionaryTmp.get(keyWords));
+//        if (directionaryTmp.get(keyWords) == null)
+//            return null;
+
+//        subDirectionary.put(keyWords, directionaryTmp.get(keyWords));
         return subDirectionary;
     }
 
@@ -339,19 +359,7 @@ public class Directionary {
         return questionData;
     }
 
-    public static void main(String[] args){
-        HashMap<String, ArrayList<String>> directionary = new HashMap<>();
-        ArrayList<String> arrayList = new ArrayList<>();
-        arrayList.add("nb1");
-        arrayList.add("nb2");
-        directionary.put("1", arrayList);
-
-        HashMap<String, ArrayList<String>> directionaryTmp = new HashMap<>();
-        directionaryTmp.putAll(directionary);
-        ArrayList<String> list = directionaryTmp.get("1");
-        list.remove("nb1");
-        System.out.println(directionaryTmp);
-        System.out.println(directionary);
-
-    }
+//    public static void main(String[] args){
+//        new Directionary();
+//    }
 }

@@ -632,6 +632,10 @@ public class UserInterface extends javax.swing.JFrame {
         Set<String> keySet = result.keySet();
         for (String key : keySet){
             ArrayList<String> listDefi = result.get(key);
+
+            if (listDefi == null)
+                System.out.println(key);
+
             for (String defi : listDefi){
                 String[] rowData = {key, defi};
                 tableSlang.addData(rowData);

@@ -469,6 +469,12 @@ public class UserInterface extends javax.swing.JFrame {
             return;
         }
 
+        int input = JOptionPane.showConfirmDialog(null, "Are you really to delete this ? ",
+                                                  "Delete", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+        if (input == 1)
+            return;
+
 
         //delete on GUI
         tableSlang.deleteSelectedRow();

@@ -71,14 +71,21 @@ public class Directionary {
     HashMap<String, ArrayList<String>> findByDefinition(String keyWords){
         HashMap<String, ArrayList<String>> subDirectionary = new HashMap<>();
         Set<String > keySet = directionaryTmp.keySet();
+        keyWords = keyWords.toUpperCase();
 
         for (String key : keySet) {
-            String definition = String.valueOf(directionaryTmp.get(key));
-            definition = definition.toUpperCase();
-            keyWords = keyWords.toUpperCase();
+            ArrayList<String> defiList = directionaryTmp.get(key);
+            ArrayList<String> defiContain = new ArrayList<>();
 
-            if (definition.contains(keyWords))
-                subDirectionary.put(key, directionaryTmp.get(key));
+            for (String definition : defiList){
+                String definitionUp = definition.toUpperCase();
+
+                if (definitionUp.contains(keyWords))
+                    defiContain.add(definition);
+            }
+
+            if (defiContain.size() != 0)
+                subDirectionary.put(key, defiContain);
         }
 
         if (subDirectionary.size() == 0)
